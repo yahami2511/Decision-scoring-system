@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>决策评分系统</title>
+<style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    h1 { text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 40px; }
+    h2 { font-weight: bold; margin-top: 30px; }
+    label { display: block; margin: 10px 0; }
+    .question { margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .reason { width: 100%; padding: 5px; margin-top: 5px; }
+    .hidden { display: none; }
+    .result { margin-top: 30px; padding: 20px; background: #dff0d8; border-radius: 8px; font-weight: bold; white-space: pre-wrap; position: relative; }
+    .score { color: gray; font-style: italic; margin-left: 5px; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; padding: 5px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+    .description {color: gray;}
+</style>
+</head>
+<body>
+
+<h1>决策评分系统</h1>
+
+<h2>决策名称</h2>
+<input type="text" id="decisionName" placeholder="请输入决策名称" style="width:100%; padding:5px; font-size:16px;">
+
+<h2>决策背景</h2>
+<textarea id="decisionBackground" placeholder="请输入决策背景" style="width:100%; padding:5px; font-size:16px; height:80px;"></textarea>
+
+<h2>决策等级</h2>
+<label><input type="radio" name="level" value="A"> A 级：重大决策（影响 ≥ 半年、不可逆或高成本）</label>
+<label><input type="radio" name="level" value="B"> B 级：中等决策（影响数周到半年、可逆概率中等）</label>
+<label><input type="radio" name="level" value="C"> C 级：小决策（即时或几小时、低成本）</label>
+
+<!-- 每类题目根据选项显示 -->
+<div id="AQuestions" class="hidden">
+  <div class="question">
+      <strong>A1 信息充分度</strong>
+      <p class="description">确保决策建立在可靠信息基础上，而不是凭感觉或一面之词。列出关键事实来源，可能是自己调查、文件、行业数据，或他人提供的证据。</p>
+      <label><input type="radio" name="A1" value="15"> ≥3 条独立、可信来源确认关键事实 <span class="score">15分</span></label>
+      <label><input type="radio" name="A1" value="10"> 2 条来源，其中至少 1 条是可靠/间接验证 <span class="score">10分</span></label>
+      <label><input type="radio" name="A1" value="5"> 仅 1 条来源（可能偏主观或不完全可靠） <span class="score">5分</span></label>
+      <label><input type="radio" name="A1" value="0"> 无独立证据，仅凭口头承诺或个人感觉 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A2 现实检验度</strong>
+      <p class="description">把你的计划与现实情况对照，确认假设是否成立。可列出关键事实或数据，自己观察的、他人提供的或公开信息均可。</p>
+      <label><input type="radio" name="A2" value="12"> 列出 ≥3 条可验证现实信息，计划在这些条件下仍可执行 <span class="score">12分</span></label>
+      <label><input type="radio" name="A2" value="8"> 列出 1–2 条信息，计划部分可行 <span class="score">8分</span></label>
+      <label><input type="radio" name="A2" value="4"> 信息不完整，大多依赖假设 <span class="score">4分</span></label>
+      <label><input type="radio" name="A2" value="0"> 完全凭想象，没有验证 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A3 冷静期与冲动度</strong>
+      <p class="description">强制在情绪或灵感高涨时“刹车”，避免即时承诺，对抗“头脑一热”，给情绪冷却时间；A级决策必须至少搁置 72 小时，在冷却期结束时复查 A1–A2 项，记录首次冲动时间。</p>
+      <label><input type="radio" name="A3" value="12"> ≥72 小时冷静期并复查核心假设 <span class="score">12分</span></label>
+      <label><input type="radio" name="A3" value="8"> 48 小时冷静期并部分复查 <span class="score">8分</span></label>
+      <label><input type="radio" name="A3" value="4"> ＜24 小时或只口头考虑 <span class="score">4分</span></label>
+      <label><input type="radio" name="A3" value="0"> 当场决定/立即行动 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A4 最坏情形与可承受性</strong>
+      <p class="description">把“最坏后果”写出来并量化（金额/时间/名誉/家庭影响），判断自己是否能承受损失，并列出至少一项退出或缓解方案。</p>
+      <label><input type="radio" name="A4" value="12"> 量化最坏后果并有明确缓解/退出方案 <span class="score">12分</span></label>
+      <label><input type="radio" name="A4" value="8"> 能描述最坏后果，但缓解不完整 <span class="score">8分</span></label>
+      <label><input type="radio" name="A4" value="4"> 模糊描述最坏情形 <span class="score">4分</span></label>
+      <label><input type="radio" name="A4" value="0"> 不愿想最坏情形 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A5 信息对称与动机透明度</strong>
+      <p class="description">识别决策中可能存在的利益动机（自己或他人），避免被表面承诺的“美好愿景”蒙蔽，记录事实和动机判断，无论信息来自自己判断还是他人提供。</p>
+      <label><input type="radio" name="A5" value="10"> 清晰列出所有关键动机/利益点，有证据验证 <span class="score">10分</span></label>
+      <label><input type="radio" name="A5" value="6"> 部分动机推测或验证 <span class="score">6分</span></label>
+      <label><input type="radio" name="A5" value="2"> 动机模糊不明 <span class="score">2分</span></label>
+      <label><input type="radio" name="A5" value="0"> 重要动机被隐藏或完全不清楚 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A6 第三方/替代验证</strong>
+      <p class="description">通过外部证据或专业意见校验决策，确保不是单凭自我感觉或他人片面说法。可以使用匿名渠道、公开资料、付费顾问或法律审核。</p>
+      <label><input type="radio" name="A6" value="10"> 独立找到第三方客观证据 <span class="score">10分</span></label>
+      <label><input type="radio" name="A6" value="6"> 匿名/公开来源间接验证 <span class="score">6分</span></label>
+      <label><input type="radio" name="A6" value="2"> 付费顾问/律师审阅 <span class="score">2分</span></label>
+      <label><input type="radio" name="A6" value="0"> 无任何验证 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A7 情绪与外界施压度</strong>
+      <p class="description">评估自己是否被情绪或外界催促影响决策。记录所有催促或心理压力源，任何出现催促按规则扣分并自动启动冷却。</p>
+      <label><input type="radio" name="A7" value="0"> 情绪平稳，无催促影响 <span class="score">0分</span></label>
+      <label><input type="radio" name="A7" value="-4"> 轻微催促或内心担心被拒 <span class="score">-4分</span></label>
+      <label><input type="radio" name="A7" value="-7"> 情绪受操控（热情→冷落交替） <span class="score">-7分</span></label>
+      <label><input type="radio" name="A7" value="-10"> 当场答应或强烈害怕冲突 <span class="score">-10分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A8 长期一致性</strong>
+      <p class="description">判断这次决策是否与 3 年长期目标一致，防止短期诱惑毁掉长期计划，避免被短期“亮点”吸引。列出长期目标并逐条对照决策影响。</p>
+      <label><input type="radio" name="A8" value="11"> 与长期目标高度一致，可量化收益 <span class="score">11分</span></label>
+      <label><input type="radio" name="A8" value="7"> 部分一致，可调整实现 <span class="score">7分</span></label>
+      <label><input type="radio" name="A8" value="3"> 短期收益明显，长期风险高 <span class="score">3分</span></label>
+      <label><input type="radio" name="A8" value="0"> 与长期利益冲突 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A9 决策透明记录度</strong>
+      <p class="description">确保整个决策过程可以复盘。记录你的分析、证据来源、冷却时间、验证过程，无论是否有他人参与。</p>
+      <label><input type="radio" name="A9" value="10"> 决策全程记录（笔记、邮件、日志） <span class="score">10分</span></label>
+      <label><input type="radio" name="A9" value="6"> 部分记录，信息缺失 <span class="score">6分</span></label>
+      <label><input type="radio" name="A9" value="2"> 只有零散记录 <span class="score">2分</span></label>
+      <label><input type="radio" name="A9" value="0"> 完全无记录 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A10 依赖他人风险度 </strong>
+      <p class="description">评估执行决策时对外部资源或他人的依赖，并制定备选方案或自主管控措施。</p>
+      <label><input type="radio" name="A10" value="10"> 完全可独立执行或验证 <span class="score">10分</span></label>
+      <label><input type="radio" name="A10" value="6"> 小部分依赖，可控制 <span class="score">6分</span></label>
+      <label><input type="radio" name="A10" value="2"> 关键部分依赖他人，风险中等 <span class="score">2分</span></label>
+      <label><input type="radio" name="A10" value="0"> 关键环节完全依赖他人 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A11 时间压力敏感度</strong>
+      <p class="description">量化时间限制对你判断的负面影响，避免“限时优惠”式冲动；时间压力是头脑一热的重要诱因，遇到“限时”条件先冷却并验证是否是真实限制。</p>
+      <label><input type="radio" name="A11" value="10"> 无时间压力，冷静规划 <span class="score">10分</span></label>
+      <label><input type="radio" name="A11" value="6"> 轻微压力，可控制 <span class="score">6分</span></label>
+      <label><input type="radio" name="A11" value="2"> 明显压力，影响判断 <span class="score">2分</span></label>
+      <label><input type="radio" name="A11" value="0"> 被催促/限时，容易当场决定 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>A12 决策多方案对比度</strong>
+      <p class="description">强制生成并比较多条可行方案，量化优劣（成本、时间、失败概率、收益）。避免陷入单一路径思维。</p>
+      <label><input type="radio" name="A12" value="10"> 列出 ≥3 可选方案，并完整对比 <span class="score">10分</span></label>
+      <label><input type="radio" name="A12" value="6"> 列出 2 个方案，对比基本 <span class="score">6分</span></label>
+      <label><input type="radio" name="A12" value="2"> 仅考虑当前方案 <span class="score">2分</span></label>
+      <label><input type="radio" name="A12" value="0"> 没有对比思路 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+</div>
+
+<div id="BQuestions" class="hidden">
+  <div class="question">
+      <strong>B1 信息充分度</strong>
+      <p class="description">确保中等风险决策不是凭感觉或单一口头信息做出。至少收集两条独立来源，可能是文件、行业数据或第三方信息，并写入表格。</p>
+      <label><input type="radio" name="B1" value="15"> ≥2 条独立来源或文档验证 <span class="score">15分</span></label>
+      <label><input type="radio" name="B1" value="10"> 1 条独立来源 + 对方信息 <span class="score">10分</span></label>
+      <label><input type="radio" name="B1" value="5"> 仅依赖对方口头信息 <span class="score">5分</span></label>
+      <label><input type="radio" name="B1" value="0"> 凭个人感觉或未经验证 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B2 冲动/情绪因素</strong>
+      <p class="description">评估自己是否冲动或被情绪影响，记录触发点，避免“看到好处就立即报名/购买”的冲动。若出现冲动，可延迟 24 小时再做决定。</p>
+      <label><input type="radio" name="B2" value="12"> 情绪平稳，无冲动 <span class="score">12分</span></label>
+      <label><input type="radio" name="B2" value="8"> 略有兴奋，但可控 <span class="score">8分</span></label>
+      <label><input type="radio" name="B2" value="4"> 明显冲动或受催促 <span class="score">4分</span></label>
+      <label><input type="radio" name="B2" value="0"> 当场想做或被强烈催促 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B3 备用方案与可逆性</strong>
+      <p class="description">确保决策可撤回或试错，降低后果成本。例如退款、试用、短期合同等。</p>
+      <label><input type="radio" name="B3" value="12"> ≥2 可逆方案 <span class="score">12分</span></label>
+      <label><input type="radio" name="B3" value="8"> 1 个可逆方案 <span class="score">8分</span></label>
+      <label><input type="radio" name="B3" value="4"> 不可逆但风险有限 <span class="score">4分</span></label>
+      <label><input type="radio" name="B3" value="0"> 不可逆或代价高 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B4 成本/收益基本评估</strong>
+      <p class="description">把决策的收益和成本量化，包括金钱、时间、机会成本，做简单ROI估算，拒绝空泛承诺，避免轻易相信“未来价值”而忽视当前代价。</p>
+      <label><input type="radio" name="B4" value="12"> 成本/收益量化清楚，收益率满意 <span class="score">12分</span></label>
+      <label><input type="radio" name="B4" value="8"> 收益估算，但不精确 <span class="score">8分</span></label>
+      <label><input type="radio" name="B4" value="4"> 收益模糊 <span class="score">4分</span></label>
+      <label><input type="radio" name="B4" value="0"> 凭感觉决定 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B5 隐私/暴露顾虑</strong>
+      <p class="description">在不暴露个人隐私的前提下，找到验证方法。优先使用匿名渠道、官方或第三方资料。</p>
+      <label><input type="radio" name="B5" value="10"> 无需透露隐私即可验证 <span class="score">10分</span></label>
+      <label><input type="radio" name="B5" value="6"> 需少量信息 <span class="score">6分</span></label>
+      <label><input type="radio" name="B5" value="2"> 需较多信息/谨慎处理 <span class="score">2分</span></label>
+      <label><input type="radio" name="B5" value="0"> 必须公开大量私密信息 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B6 冷静期与复核度</strong>
+      <p class="description">给自己设立强制复核窗口，至少延迟 24 小时，再核验前几项信息，避免瞬时决策扩散风险。</p>
+      <label><input type="radio" name="B6" value="10"> 等待 ≥24 小时，复核全部信息 <span class="score">10分</span></label>
+      <label><input type="radio" name="B6" value="7"> 延迟 12–24 小时，复核部分信息 <span class="score">7分</span></label>
+      <label><input type="radio" name="B6" value="3"> 延迟 ≤12 小时或仅口头考虑 <span class="score">3分</span></label>
+      <label><input type="radio" name="B6" value="0"> 当场决定 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B7 时间压力敏感度</strong>
+      <p class="description">识别外界催促或限时促销对判断的影响，验证是否真实，必要时延迟决策，验证真实性。</p>
+      <label><input type="radio" name="B7" value="10"> 无压力，冷静规划 <span class="score">10分</span></label>
+      <label><input type="radio" name="B7" value="6"> 轻微压力，可控 <span class="score">6分</span></label>
+      <label><input type="radio" name="B7" value="2"> 明显压力，影响判断 <span class="score">2分</span></label>
+      <label><input type="radio" name="B7" value="0"> 被强烈催促，容易当场决定 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B8 长期一致性</strong>
+      <p class="description">判断此决策是否有利于近一年目标，避免短期收益损害近中期目标，对照 1 年计划评估是否推进。</p>
+      <label><input type="radio" name="B8" value="10"> 与未来 1 年目标高度一致 <span class="score">10分</span></label>
+      <label><input type="radio" name="B8" value="6"> 部分一致 <span class="score">6分</span></label>
+      <label><input type="radio" name="B8" value="2"> 短期收益明显，长期风险高 <span class="score">2分</span></label>
+      <label><input type="radio" name="B8" value="0"> 与长期目标冲突 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>B9 决策多方案对比度</strong>
+      <p class="description">至少列出 2 个方案，并对比优缺点，避免单点思维或快速跟随。</p>
+      <label><input type="radio" name="B9" value="10"> ≥2 可选方案，优劣对比清楚 <span class="score">10分</span></label>
+      <label><input type="radio" name="B9" value="6"> 2 个方案 <span class="score">6分</span></label>
+      <label><input type="radio" name="B9" value="2"> 仅考虑当前方案 <span class="score">2分</span></label>
+      <label><input type="radio" name="B9" value="0"> 无对比思路 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+</div>
+
+<div id="CQuestions" class="hidden">
+  <div class="question">
+      <strong>C1 可逆性与影响度</strong>
+      <p class="description">判断决策是否可以快速回滚，影响是否微小。即使是小决策，也要避免因冲动带来累积成本或麻烦。若不可逆或有麻烦，至少等 5–15 分钟再执行。</p>
+      <label><input type="radio" name="C1" value="10"> 完全可逆、影响微小 <span class="score">10分</span></label>
+      <label><input type="radio" name="C1" value="6"> 小成本可回滚 <span class="score">6分</span></label>
+      <label><input type="radio" name="C1" value="2"> 可能带来小麻烦 <span class="score">2分</span></label>
+      <label><input type="radio" name="C1" value="0"> 不可逆或麻烦大 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>C2 当前情绪冲动度</strong>
+      <p class="description">短时间内识别自己是否因情绪冲动做决定（例如看到促销、好点子想立即行动）。情绪偏高时，先冷却并写下 1 条反对理由。</p>
+      <label><input type="radio" name="C2" value="10"> 情绪平稳、理性 <span class="score">10分</span></label>
+      <label><input type="radio" name="C2" value="6"> 略有冲动 <span class="score">6分</span></label>
+      <label><input type="radio" name="C2" value="2"> 明显冲动 <span class="score">2分</span></label>
+      <label><input type="radio" name="C2" value="0"> 强烈冲动/被催促 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>C3 信息核实度</strong>
+      <p class="description">防止因信息错误导致小决策失误，避免只凭第一印象快速行动而忽视事实，核对时间/价格/联系人等关键信息后再做。</p>
+      <label><input type="radio" name="C3" value="5"> 核实所有关键数据 <span class="score">5分</span></label>
+      <label><input type="radio" name="C3" value="3"> 部分核实 <span class="score">3分</span></label>
+      <label><input type="radio" name="C3" value="0"> 凭感觉或对方口头信息 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>C4 时间压力敏感度</strong>
+      <p class="description">判断自己是否在外界催促下快速决定。如果压力明显，先延迟并用一句话推迟回应。</p>
+      <label><input type="radio" name="C4" value="3"> 无时间压力 <span class="score">3分</span></label>
+      <label><input type="radio" name="C4" value="2"> 轻微压力 <span class="score">2分</span></label>
+      <label><input type="radio" name="C4" value="1"> 明显压力 <span class="score">1分</span></label>
+      <label><input type="radio" name="C4" value="0"> 被强制当场决定 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+  <div class="question">
+      <strong>C5 决策多方案对比度</strong>
+      <p class="description">即使是小决策，也要考虑至少 1 个替代方案，例如“再等等 / 换一家 / 不做”，减少自动驾驶式选择。</p>
+      <label><input type="radio" name="C5" value="2"> 有 1–2 替代方案 <span class="score">2分</span></label>
+      <label><input type="radio" name="C5" value="1"> 仅考虑当前方案 <span class="score">1分</span></label>
+      <label><input type="radio" name="C5" value="0"> 没有任何对比方案 <span class="score">0分</span></label>
+      <input type="text" class="reason" placeholder="选择理由">
+  </div>
+</div>
+
+<button onclick="submitForm()">提交</button>
+
+<div id="result" class="result hidden">
+  <button class="copy-btn" onclick="copySummary()">复制总结</button>
+  <div id="summaryText"></div>
+</div>
+
+<script>
+const levelRadios = document.getElementsByName('level');
+const AQuestions = document.getElementById('AQuestions');
+const BQuestions = document.getElementById('BQuestions');
+const CQuestions = document.getElementById('CQuestions');
+
+levelRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+        AQuestions.classList.add('hidden');
+        BQuestions.classList.add('hidden');
+        CQuestions.classList.add('hidden');
+        if(radio.value==='A') AQuestions.classList.remove('hidden');
+        if(radio.value==='B') BQuestions.classList.remove('hidden');
+        if(radio.value==='C') CQuestions.classList.remove('hidden');
+    });
+});
+
+function submitForm(){
+    // 校验决策名称
+    let decisionName = document.getElementById('decisionName').value.trim();
+    if(!decisionName){
+        alert("请填写决策名称");
+        return; // 阻止提交
+    }
+
+    // 校验决策等级
+    let level = document.querySelector('input[name="level"]:checked')?.value;
+    if(!level){ 
+        alert("请选择决策等级"); 
+        return; 
+    }
+
+    let levelTextMap = {
+            'A': '重大决策（影响 ≥ 半年、不可逆或高成本）',
+            'B': '中等决策（影响数周到半年、可逆概率中等）',
+            'C': '小决策（即时或几小时、低成本）'
+    };
+
+    let total = 0;
+    let summaryText = `决策名称：${decisionName}\n\n`;
+    // 添加决策背景（如有）
+    let decisionBackground = document.getElementById('decisionBackground')?.value.trim();
+    if(decisionBackground){
+        summaryText += `决策背景：${decisionBackground}\n\n`;
+    }
+    summaryText += `决策等级：${levelTextMap[level]}\n\n\n`;
+
+    let questions;
+    if(level==='A') questions = document.querySelectorAll('#AQuestions .question');
+    if(level==='B') questions = document.querySelectorAll('#BQuestions .question');
+    if(level==='C') questions = document.querySelectorAll('#CQuestions .question');
+
+    // 必答校验：仅检查是否选择选项，理由可以为空
+    for(let q of questions){
+        let selInput = q.querySelector('input[type="radio"]:checked');
+        if(!selInput){
+            alert(`请完成题目 "${q.querySelector('strong').textContent}" 的选择`);
+            return; // 阻止提交
+        }
+    }
+
+    questions.forEach(q=>{
+        let selInput = q.querySelector('input[type="radio"]:checked');
+        let reason = q.querySelector('.reason').value.trim();
+        reason = reason ? '；' + reason : '';
+        total += selInput ? parseInt(selInput.value) : 0;
+
+        let selText = '未选择';
+        if(selInput){
+            let selLabel = selInput.parentElement;
+            // 获取选项文字
+            let choiceText = '';
+            selLabel.childNodes.forEach(node=>{
+                if(node.nodeType === Node.TEXT_NODE){ // 文本节点
+                    choiceText += node.textContent.trim();
+                }
+            });
+            // 获取分数
+            let scoreText = selLabel.querySelector('.score')?.textContent.trim() || '';
+            selText = `${choiceText}，${scoreText}`;
+        }
+
+        summaryText += `${q.querySelector('strong').textContent}：${selText}${reason}\n\n`;
+    });
+
+
+    let resultText = '';
+    if(level==='A'){
+        if(total >= 120) resultText=`判定: 可执行 | 建议: 写入条款，设置里程碑`;
+        else if(total >=90) resultText=`判定: 补低分项再复评 | 建议: 收集信息、第三方验证、生成方案`;
+        else if(total >=60) resultText=`判定: 高风险 | 建议: 改为小规模试点或延迟`;
+        else resultText=`判定: 停止 | 建议: 冷却、信息补全、复盘`;
+    } else if(level==='B'){
+        if(total >=70) resultText=`判定: 可执行 | 建议: 设置短期里程碑`;
+        else if(total >=50) resultText=`判定: 延迟 24 小时 | 建议: 补信息/复核/生成方案`;
+        else resultText=`判定: 暂停 | 建议: 改为试点或放弃`;
+    } else if(level==='C'){
+        if(total >=20) resultText=`判定: 直接执行 | 建议: 直接执行`;
+        else if(total >=15) resultText=`判定: 等 5–30 分钟 | 建议: 冷却再做`;
+        else resultText=`判定: 暂缓 | 建议: 等待冷静/核实信息`;
+    }
+
+    summaryText += `\n总分：${total}\n${resultText}`;
+    document.getElementById('summaryText').textContent = summaryText;
+    document.getElementById('result').classList.remove('hidden');
+}
+
+// 复制功能
+function copySummary(){
+    const text = document.getElementById('summaryText').textContent;
+    navigator.clipboard.writeText(text).then(()=>{
+        alert('总结已复制到剪贴板');
+    }).catch(err=>{
+        alert('复制失败: ' + err);
+    });
+}
+</script>
+
+</body>
+</html>
