@@ -2,25 +2,32 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>决策评分系统</title>
+<!-- ↓↓↓ 让手机按正常比例显示，不再乱放大字体 -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ↓↓↓ 禁止手机浏览器自动放大小字号 -->
 <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-    h1 { text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 40px; }
-    h2 { font-weight: bold; margin-top: 30px; }
-    label { display: block; margin: 10px 0; }
-    .question { margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    .reason { width: 100%; padding: 5px; margin-top: 5px; }
-    .hidden { display: none; }
-    .result { margin-top: 30px; padding: 20px; background: #dff0d8; border-radius: 8px; font-weight: bold; white-space: pre-wrap; position: relative; }
-    .score { color: gray; font-style: italic; margin-left: 5px; }
-    .copy-btn { position: absolute; top: 10px; left: 10px; padding: 5px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
-    /* 题目标题字体大小（新增）*/
-    .question strong { font-size: 20px; }
-    /* 选项字体大小（新增）*/
-    .question label { font-size: 16px; }
-    /* 描述说明文字大小*/
-    .question .description {color: gray; font-size: 14px;}
-    
+html { -webkit-text-size-adjust: 100%; }
+</style>
+
+<title>决策评分系统</title>
+
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+h1 { text-align: center; font-size: 32px; font-weight: bold; margin-bottom: 40px; }
+h2 { font-weight: bold; margin-top: 30px; }
+label { display: block; margin: 10px 0; }
+.question { margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+.reason { width: 100%; padding: 5px; margin-top: 5px; }
+.hidden { display: none; }
+.result { margin-top: 30px; padding: 20px; background: #dff0d8; border-radius: 8px; font-weight: bold; white-space: pre-wrap; position: relative; }
+.score { color: gray; font-style: italic; margin-left: 5px; }
+.copy-btn { position: absolute; top: 10px; left: 10px; padding: 5px 10px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+/* 题目标题字体大小（新增）*/
+.question strong { font-size: 20px; }
+/* 选项字体大小（新增）*/
+.question label { font-size: 16px; }
+/* 描述说明文字大小*/
+.question .description {color: gray; font-size: 14px;}
 </style>
 </head>
 <body>
